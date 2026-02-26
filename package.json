@@ -1,0 +1,53 @@
+{
+  "name": "captcha-access-control",
+  "version": "1.0.0",
+  "description": "Verification code access control system for paid questionnaire",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "generate-codes": "npx tsx scripts/generate-codes.ts"
+  },
+  "dependencies": {
+    "@cloudflare/next-on-pages": "^1.13.0",
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "jose": "^5.9.6",
+    "lucide-react": "^0.454.0",
+    "next": "^15.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss": "^3.4.15",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.24",
+    "eslint": "^4.1.1",
+    "eslint-config-next": "^0.2.4",
+    "postcss": "^8.5.6",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.66.0"
+  },
+  "overrides": {
+    "tar": ">=7.4.0",
+    "cross-spawn": ">=6.0.6",
+    "path-to-regexp": ">=7.0.0",
+    "cookie": ">=0.7.0",
+    "ajv": ">=8.18.0",
+    "tmp": ">=0.2.3",
+    "esbuild": ">=0.24.2",
+    "undici": ">=6.22.0"
+  }
+}

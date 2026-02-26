@@ -1,0 +1,26 @@
+# ================================
+# 项目基本信息
+# ================================
+name = "quiz-verify-app"
+compatibility_date = "2026-02-18"
+compatibility_flags = ["nodejs_compat"]
+
+# ================================
+# Cloudflare Pages 配置
+# ================================
+pages_build_output_dir = ".next"
+
+# ================================
+# KV 存储绑定
+# ================================
+[[kv_namespaces]]
+binding = "QUIZ_CODES"
+id = "0b946189adfb4121a7f31d32603ebbde"
+
+# ================================
+# 环境变量（非敏感信息）
+# ================================
+[vars]
+APP_NAME = "历史人物测试"
+NEXT_PUBLIC_APP_VERSION = "1.0.0"
+NEXT_PUBLIC_APP_TITLE = "测测你是哪个历史人物"
