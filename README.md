@@ -152,10 +152,83 @@ curl -X POST http://localhost:3000/api/validate-token/ \
 curl http://localhost:3000/api/stats/
 ```
 
+### GET /api/captchas
+
+获取所有验证码列表 (使用 flow queries 优化性能)
+
+```bash
+# 获取验证码列表 (默认 100 条)
+curl http://localhost:3000/api/captchas/
+
+# 自定义分页参数
+curl "http://localhost:3000/api/captchas/?limit=50"
+
+# 使用游标分页
+curl "http://localhost:3000/api/captchas/?cursor=xxx"
+```
+
+查询参数：
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `limit` | number | 100 | 每页数量 (最大 1000) |
+| `cursor` | string | - | 分页游标 |
+
+响应：
+```json
+{
+  "captchas": [
+    {"code": "TEST01", "status": "unused", "usedAt": null, "deviceId": null, "expiresAt": 1737158400000}
+  ],
+  "pagination": {
+    "hasMore": false,
+    "cursor": "...",
+    "limit": 100
+  }
+}
+```
+
+**注意:** 需要设置 `X-Admin-Secret` 请求头进行管理员认证
+
+### POST /api/captchas
+
+生成新的验证码
+
+```bash
+# 生成 10 个验证码
+curl -X POST http://localhost:3000/api/captchas/ \
+  -H "Content-Type: application/json" \
+  -d '{"count": 10}'
+
+# 生成 100 个验证码，自定义长度和过期时间
+curl -X POST http://localhost:3000/api/captchas/ \
+  -H "Content-Type: application/json" \
+  -d '{"count": 100, "length": 6, "expirationDays": 30}'
+```
+
+请求体：
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `count` | number | 10 | 生成数量 (最大 1000) |
+| `length` | number | 6 | 验证码长度 |
+| `expirationDays` | number | 30 | 过期天数 |
+
+响应：
+```json
+{
+  "success": true,
+  "generated": 10,
+  "codes": ["ABC123", "DEF456", ...],
+  "message": "成功生成 10 个验证码"
+}
+```
+
+**注意:** 需要设置 `X-Admin-Secret` 请求头进行管理员认证
+
 ## 页面路由
 
 - `/` - 首页 (重定向到 /verify)
 - `/verify` - 验证码输入页面
+- `/captchas` - 验证码管理页面 (管理员)
 - `/app` - 受保护的问卷页面 (需要登录)
 
 ## 生产部署

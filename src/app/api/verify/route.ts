@@ -3,8 +3,17 @@ import { verifyRequestSchema } from "@/lib/schemas";
 import { getVerificationCode, updateCodeStatus } from "@/lib/kv";
 import { generateToken } from "@/lib/jwt";
 import { isRateLimited, getClientIP } from "@/lib/rate-limit";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export const runtime = "edge";
+
+function getEnv(): Record<string, unknown> {
+  try {
+    return getRequestContext().env as unknown as Record<string, unknown>;
+  } catch {
+    return process.env as unknown as Record<string, unknown>;
+  }
+}
 
 /**
  * POST /api/verify
@@ -38,10 +47,7 @@ export async function POST(
     
     const { code, deviceId } = validation.data;
     
-    // Get environment bindings - works in Cloudflare Pages runtime
-    // In local dev, this will be process.env via wrangler
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const env = process.env as any;
+    const env = getEnv();
     
     // Get the verification code from KV
     const codeData = await getVerificationCode(code, env);

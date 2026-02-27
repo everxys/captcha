@@ -9,6 +9,8 @@ const publicPaths = [
   "/api/verify",
   "/api/validate-token",
   "/api/stats",
+  "/api/captchas",
+  "/captchas",
   "/_next",
   "/favicon.ico",
 ];

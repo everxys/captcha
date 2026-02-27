@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerificationStats } from "@/lib/kv";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export const runtime = "edge";
+
+function getEnv(): Record<string, unknown> {
+  try {
+    return getRequestContext().env as unknown as Record<string, unknown>;
+  } catch {
+    return process.env as unknown as Record<string, unknown>;
+  }
+}
 
 /**
  * GET /api/stats
@@ -16,7 +25,8 @@ export async function GET(
     const adminSecret = request.headers.get("X-Admin-Secret");
     
     // Check for simple admin secret (in production, use proper auth)
-    const expectedSecret = process.env.ADMIN_SECRET;
+    const env = getEnv();
+    const expectedSecret = env.ADMIN_SECRET as string | undefined;
     
     if (expectedSecret && adminSecret !== expectedSecret) {
       return NextResponse.json(
@@ -24,10 +34,6 @@ export async function GET(
         { status: 401 }
       );
     }
-    
-    // Get environment bindings
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const env = process.env as any;
     
     // Get actual stats from KV
     const stats = await getVerificationStats(env);

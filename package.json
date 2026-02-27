@@ -4,10 +4,12 @@
   "description": "Verification code access control system for paid questionnaire",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8788",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "pages:dev": "npm run pages:build && npx wrangler pages dev .vercel/output/static --kv CAPTCHA_KV --persist-to .wrangler/state --env-file .env --port 8788",
     "generate-codes": "npx tsx scripts/generate-codes.ts"
   },
   "dependencies": {

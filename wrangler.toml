@@ -2,7 +2,7 @@
 # 项目基本信息
 # ================================
 name = "quiz-verify-app"
-compatibility_date = "2026-02-18"
+compatibility_date = "2026-02-26"
 compatibility_flags = ["nodejs_compat"]
 
 # ================================
@@ -14,8 +14,8 @@ pages_build_output_dir = ".next"
 # KV 存储绑定
 # ================================
 [[kv_namespaces]]
-binding = "QUIZ_CODES"
-id = "0b946189adfb4121a7f31d32603ebbde"
+binding = "CAPTCHA_KV"
+id = "53c467f68ccb43d2b38c45a52ec7c7cc"
 
 # ================================
 # 环境变量（非敏感信息）
