@@ -1,5 +1,21 @@
 # 更新日志
 
+## v1.1.0 (2026-02-27)
+
+### 变更
+
+1. **部署目标调整**
+   - 前端改为适配 Vercel 部署（移除 Cloudflare Pages 本地开发脚本，去掉 next-on-pages 运行时依赖）
+
+2. **数据存储迁移到 Supabase**
+   - 用 Supabase PostgREST 替代 Cloudflare KV：验证码读取/分页/统计/生成/核销
+   - 新增 Supabase 建表 SQL：`scripts/supabase-schema.sql`
+
+3. **工程清理/重构**
+   - 添加 `vercel.json`，删除 `wrangler.toml`
+   - 移除 `@cloudflare/next-on-pages` / `wrangler` 依赖与相关脚本
+   - API Route handlers 统一为 Node.js runtime，并清理无用参数签名
+
 ## v1.0.1 (2026-02-27)
 
 ### 修复

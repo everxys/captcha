@@ -1,27 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequestSchema } from "@/lib/schemas";
-import { getVerificationCode, updateCodeStatus } from "@/lib/kv";
+import { getVerificationCode, markCodeUsed } from "@/lib/kv";
 import { generateToken } from "@/lib/jwt";
-import { isRateLimited, getClientIP } from "@/lib/rate-limit";
-import { getRequestContext } from "@cloudflare/next-on-pages";
 
-export const runtime = "edge";
-
-function getEnv(): Record<string, unknown> {
-  try {
-    return getRequestContext().env as unknown as Record<string, unknown>;
-  } catch {
-    return process.env as unknown as Record<string, unknown>;
-  }
-}
+export const runtime = "nodejs";
 
 /**
  * POST /api/verify
  * Verify a verification code and issue JWT token
  */
 export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  request: NextRequest
 ): Promise<NextResponse> {
   try {
   // Rate limiting check (disabled for testing)
@@ -47,10 +36,7 @@ export async function POST(
     
     const { code, deviceId } = validation.data;
     
-    const env = getEnv();
-    
-    // Get the verification code from KV
-    const codeData = await getVerificationCode(code, env);
+    const codeData = await getVerificationCode(code);
     
     // Check if code exists
     if (!codeData) {
@@ -76,16 +62,22 @@ export async function POST(
       );
     }
     
-    // Mark code as used
-    await updateCodeStatus(
-      code, 
-      { 
-        status: "used", 
-        usedAt: Date.now(), 
-        deviceId: deviceId || undefined 
-      }, 
-      env
-    );
+    // Mark code as used (best-effort atomic: only updates when status is still unused)
+    const usedAt = Date.now();
+    const ok = await markCodeUsed(code, { usedAt, deviceId: deviceId || null });
+    if (!ok) {
+      const latest = await getVerificationCode(code);
+      if (latest?.status === "used") {
+        return NextResponse.json(
+          { success: false, message: "验证码已被使用" },
+          { status: 400 }
+        );
+      }
+      return NextResponse.json(
+        { success: false, message: "验证码状态更新失败，请重试" },
+        { status: 409 }
+      );
+    }
     
     // Generate JWT token
     const token = await generateToken(code, deviceId);

@@ -1,16 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllVerificationCodes, generateCaptchas } from "@/lib/kv";
-import { getRequestContext } from "@cloudflare/next-on-pages";
 
-export const runtime = "edge";
-
-function getEnv(): Record<string, unknown> {
-  try {
-    return getRequestContext().env as unknown as Record<string, unknown>;
-  } catch {
-    return process.env as unknown as Record<string, unknown>;
-  }
-}
+export const runtime = "nodejs";
 
 /**
  * GET /api/captchas
@@ -26,8 +17,7 @@ export async function GET(
   try {
     // Admin authentication check
     const adminSecret = request.headers.get("X-Admin-Secret");
-    const env = getEnv();
-    const expectedSecret = env.ADMIN_SECRET as string | undefined;
+    const expectedSecret = process.env.ADMIN_SECRET;
     
     if (expectedSecret && adminSecret !== expectedSecret) {
       return NextResponse.json(
@@ -42,7 +32,7 @@ export async function GET(
     const cursor = searchParams.get("cursor") || undefined;
     
     // Fetch all captchas using flow queries (cursor-based pagination)
-    const result = await getAllVerificationCodes(env, { limit, cursor });
+    const result = await getAllVerificationCodes({ limit, cursor });
     
     return NextResponse.json({
       captchas: result.data,
@@ -78,8 +68,7 @@ export async function POST(
   try {
     // Admin authentication check
     const adminSecret = request.headers.get("X-Admin-Secret");
-    const env = getEnv();
-    const expectedSecret = env.ADMIN_SECRET as string | undefined;
+    const expectedSecret = process.env.ADMIN_SECRET;
     
     if (expectedSecret && adminSecret !== expectedSecret) {
       return NextResponse.json(
@@ -95,7 +84,7 @@ export async function POST(
     const expirationDays = parseInt(body.expirationDays, 10) || 30;
     
     // Generate new captchas with deduplication
-    const result = await generateCaptchas(count, env, { length, expirationDays });
+    const result = await generateCaptchas(count, { length, expirationDays });
     
     return NextResponse.json({
       success: result.success,

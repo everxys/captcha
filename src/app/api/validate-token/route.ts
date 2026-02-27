@@ -7,8 +7,7 @@ import { verifyToken, getTokenFromHeader } from "@/lib/jwt";
  * Validate a JWT token
  */
 export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  request: NextRequest
 ): Promise<NextResponse> {
   try {
     // Try to get token from header first, then from body

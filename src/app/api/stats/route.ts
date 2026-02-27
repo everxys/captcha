@@ -1,32 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerificationStats } from "@/lib/kv";
-import { getRequestContext } from "@cloudflare/next-on-pages";
 
-export const runtime = "edge";
-
-function getEnv(): Record<string, unknown> {
-  try {
-    return getRequestContext().env as unknown as Record<string, unknown>;
-  } catch {
-    return process.env as unknown as Record<string, unknown>;
-  }
-}
+export const runtime = "nodejs";
 
 /**
  * GET /api/stats
  * Get verification code statistics
  */
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  request: NextRequest
 ): Promise<NextResponse> {
   try {
     // Simple admin check - in production use proper auth
     const adminSecret = request.headers.get("X-Admin-Secret");
     
     // Check for simple admin secret (in production, use proper auth)
-    const env = getEnv();
-    const expectedSecret = env.ADMIN_SECRET as string | undefined;
+    const expectedSecret = process.env.ADMIN_SECRET;
     
     if (expectedSecret && adminSecret !== expectedSecret) {
       return NextResponse.json(
@@ -35,8 +24,7 @@ export async function GET(
       );
     }
     
-    // Get actual stats from KV
-    const stats = await getVerificationStats(env);
+    const stats = await getVerificationStats();
     
     return NextResponse.json(stats);
     
