@@ -9,17 +9,16 @@ import { LogOut, CheckCircle } from "lucide-react";
  * Protected app page
  */
 export default function AppPage() {
-  const [isValid, setIsValid] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [tokenValid, setTokenValid] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Validate token on mount
-    const validateToken = async () => {
+    const validateToken = async (): Promise<void> => {
       const token = localStorage.getItem("authToken");
       
       if (!token) {
-        setIsValid(false);
-        setIsLoading(false);
+        setTokenValid(false);
+        setLoading(false);
         return;
       }
       
@@ -33,31 +32,35 @@ export default function AppPage() {
         });
         
         const data = await response.json();
-        setIsValid(data.valid);
+        setTokenValid(data.valid);
         
         if (!data.valid) {
-          // Clear invalid token
           localStorage.removeItem("authToken");
         }
       } catch (error) {
         console.error("Token validation error:", error);
-        setIsValid(false);
+        setTokenValid(false);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
     
     validateToken();
   }, []);
+
+  useEffect(() => {
+    if (tokenValid !== false) return;
+    window.location.href = "/captchas";
+  }, [tokenValid]);
   
   // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    window.location.href = "/verify";
+    window.location.href = "/captchas";
   };
   
   // Loading state
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -68,12 +71,7 @@ export default function AppPage() {
     );
   }
   
-  // Invalid token - redirect to verify
-  if (isValid === false) {
-    useEffect(() => {
-      window.location.href = "/verify";
-    }, []);
-    
+  if (tokenValid === false) {
     return null;
   }
   

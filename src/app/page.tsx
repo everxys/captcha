@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
 /**
- * Root page - redirect to verify
+ * Root page - redirect to admin login
  */
 export default function Home() {
-  redirect("/verify");
+  redirect("/captchas");
 }

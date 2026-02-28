@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
  * App metadata
  */
 export const metadata: Metadata = {
-  title: "验证码验证",
-  description: "输入验证码访问问卷调查",
+  title: "验证码管理后台",
+  description: "验证码管理与签发",
 };
 
 export default function RootLayout({

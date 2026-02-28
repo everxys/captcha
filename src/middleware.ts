@@ -4,8 +4,7 @@ import type { NextRequest } from "next/server";
 /**
  * Paths that don't require authentication
  */
-const publicPaths = [
-  "/verify",
+const PUBLIC_PATH_PREFIXES = [
   "/api/verify",
   "/api/validate-token",
   "/api/stats",
@@ -22,7 +21,7 @@ const publicPaths = [
  * Check if a path is public
  */
 function isPublicPath(pathname: string): boolean {
-  return publicPaths.some((path) => pathname.startsWith(path));
+  return PUBLIC_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
 /**
@@ -62,17 +61,12 @@ export function middleware(request: NextRequest) {
   const token = getToken(request);
   
   if (!token) {
-    // No token, redirect to verify page
-    const verifyUrl = new URL("/verify", request.url);
-    verifyUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(verifyUrl);
+    // No token, redirect to admin login page
+    const loginUrl = new URL("/captchas", request.url);
+    loginUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(loginUrl);
   }
-  
-  // Note: For better performance, you could use a JWT library to verify
-  // the token locally instead of making an API call
-  // But for simplicity, we'll verify with the API
-  // In production, consider verifying locally with jose
-  
+
   return NextResponse.next();
 }
 
