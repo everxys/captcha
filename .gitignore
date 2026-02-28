@@ -692,3 +692,9 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,visualstudiocode,python,java,nextjs,vuejs,react,reactnative,windows,linux,macos,go,rust
+
+# --- Project overrides ---
+# The Python template ignores any `lib/` folder, which also matches `src/lib/`.
+# We need `src/lib` committed for Next.js path aliases like `@/lib/*` on Vercel.
+!src/lib/
+!src/lib/**
