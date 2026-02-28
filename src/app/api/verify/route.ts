@@ -53,6 +53,14 @@ export async function POST(
         { status: 400 }
       );
     }
+
+    // Check if code is expired (manually expired or derived)
+    if (codeData.status === "expired") {
+      return NextResponse.json(
+        { success: false, message: "验证码已过期" },
+        { status: 400 }
+      );
+    }
     
     // Check if code is expired
     if (codeData.expiresAt && Date.now() > codeData.expiresAt) {

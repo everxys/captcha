@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-codes": "npx tsx scripts/generate-codes.ts"
+    "generate-codes": "node scripts/generate-codes.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",

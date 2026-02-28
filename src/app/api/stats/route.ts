@@ -3,6 +3,11 @@ import { getVerificationStats } from "@/lib/kv";
 
 export const runtime = "nodejs";
 
+function requireAdminSecret(): string | null {
+  const secret = process.env.ADMIN_SECRET?.trim();
+  return secret && secret.length > 0 ? secret : null;
+}
+
 /**
  * GET /api/stats
  * Get verification code statistics
@@ -15,9 +20,16 @@ export async function GET(
     const adminSecret = request.headers.get("X-Admin-Secret");
     
     // Check for simple admin secret (in production, use proper auth)
-    const expectedSecret = process.env.ADMIN_SECRET;
+    const expectedSecret = requireAdminSecret();
+
+    if (!expectedSecret) {
+      return NextResponse.json(
+        { message: "服务器未配置 ADMIN_SECRET" },
+        { status: 500 }
+      );
+    }
     
-    if (expectedSecret && adminSecret !== expectedSecret) {
+    if (adminSecret !== expectedSecret) {
       return NextResponse.json(
         { message: "未授权" },
         { status: 401 }
@@ -32,7 +44,7 @@ export async function GET(
     console.error("Stats API error:", error);
     
     return NextResponse.json(
-      { total: 0, used: 0, unused: 0, message: "服务器错误" },
+      { total: 0, used: 0, unused: 0, expired: 0, message: "服务器错误" },
       { status: 500 }
     );
   }
