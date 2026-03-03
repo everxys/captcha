@@ -83,7 +83,6 @@ export async function supabaseFetch(
   const headers = new Headers(init.headers);
   headers.set("apikey", config.serviceRoleKey);
   headers.set("authorization", `Bearer ${config.serviceRoleKey}`);
-  headers.set("x-supabase-role", "service_role");
   if (!headers.has("accept")) headers.set("accept", "application/json");
 
   return fetch(url, {
